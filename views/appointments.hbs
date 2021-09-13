@@ -1,0 +1,191 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-10">
+            <h4 class="card-title">Liste des réservations</h4>
+            <p class="card-title-desc">Ici, vous pouvez gérer la liste de vos visites guidées. Programmer des
+              rendez-vous avec les potentiels clients et autre.</p>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary float-right" data-toggle="modal" data-target=".add-tip-modal"><i
+                class="bx bx-user-plus mr-2"></i>Ajouter une réservation</button>
+          </div>
+        </div>
+
+        {{> messages}}
+
+        {{#if populated}}
+          <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
+            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Client</th>
+                <th>Téléphone</th>
+                <th>Propriété</th>
+                <th>Date & Heure</th>
+                <th>Modifier le statut</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {{#each appointments as |appointment|}}
+                <tr>
+                  <td style="font-weight: bold">{{inc @index}}</td>
+                  <td>{{appointment.user.name}}</td>
+                  <td>{{appointment.user.phone}}</td>
+                  <td>{{appointment.house.label}}</td>
+                  <td>{{appointment.date}} à {{appointment.time}}</td>
+                  <td>
+                    <select data-status="{{appointment.status}}" data-appointment="{{appointment._id}}"
+                      class="form-control app-status">
+                      <option value="WAITING">Attente de confirmation</option>
+                      <option value="ACCEPTED">Visite confirmée (En attente du client)</option>
+                      <option value="CANCELLED">Visite annulée</option>
+                      <option value="DONE">Visite effectuée (En attente de paiement)</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button type="button" title="Supprimer" class="btn btn-danger delete" data-appointment="{{appointment._id}}"><i
+                        class="bx bx-trash"></i> Supprimer</button>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Required datatable js -->
+<script src="/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
+<script src="/assets/libs/jszip/jszip.min.js"></script>
+<script src="/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+<script src="/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+<script src="/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<!-- Responsive examples -->
+<script src="/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+<!-- Input mask -->
+<script src="/assets/libs/inputmask/min/jquery.inputmask.bundle.min.js"></script>
+<script src="/assets/js/pages/form-mask.init.js"></script>
+<script src="/assets/libs/moment.js"></script>
+<script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<!-- form repeater js -->
+<script src="/assets/libs/jquery.repeater/jquery.repeater.min.js"></script>
+
+<script>
+  const cookies = document.cookie.split(';');
+
+  $('.app-status').each((i, e) => {
+    const status = e.dataset['status'];
+    $(e).val(status);
+  });
+
+  const disableInput = () => {
+    const input = $('#edit-tip-form').find('input');
+    const select = $('#edit-tip-form').find('select');
+    const textarea = $('#edit-tip-form').find('textarea');
+
+    for (item of input) {
+      item.disabled = true;
+    }
+
+    for (item of select) {
+      item.disabled = true;
+    }
+
+    for (item of textarea) {
+      item.disabled = true;
+    }
+  };
+
+  const enableInput = () => {
+    const input = $('#edit-tip-form').find('input');
+    const select = $('#edit-tip-form').find('select');
+    const textarea = $('#edit-tip-form').find('textarea');
+
+    for (item of input) {
+      item.disabled = false;
+    }
+
+    for (item of select) {
+      item.disabled = false;
+    }
+
+    for (item of textarea) {
+      item.disabled = false;
+    }
+  };
+
+  $('.app-status').change(function (e) {
+    const id = $(this)[0].dataset['appointment'];
+    const value = $(this).val();
+
+    $.ajax({
+      url: '/api/appointments/' + id,
+      data: { 'status': value },
+      method: 'PUT',
+      success: (res) => {
+        toastr.success("Le statut de la réservation a été modifié avec succès.", "Statut modifié");
+      },
+      error: (err) => {
+        console.error(err);
+        toastr.error("Impossible de modifier le statut de la réservation.", "Erreur");
+      }
+    });
+  });
+
+  $('.add-file').click(function (e) {
+    e.preventDefault();
+    $(this).before('<div class="row" style="margin-bottom: 1rem"><div class="col-md-12"><input type="file" name="image[]" id="image" accept="image/*" class="form-control" required></div></div>');
+  });
+
+  // Init DataTable
+  $('table').DataTable({ lengthChange: !1, buttons: ["copy", "excel", "pdf", "colvis"] }).buttons().container().appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)");
+
+  $('.delete').click(function () {
+    const appointment_id = $(this)[0].dataset['appointment'];
+    const parent = $(this).parent().parent().parent();
+
+    Swal.fire({
+      title: 'Supprimer?',
+      text: "Voulez-vous vraiment supprimer cette propriété?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#45cb85',
+      cancelButtonColor: '#9095ad',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.value) {
+        $.ajax({
+          url: '/api/appointments/' + appointment_id,
+          method: 'DELETE',
+          success: (res) => {
+            Swal.fire('Réservation supprimée', res.message, 'success');
+            parent.fadeOut();
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', err.responseJSON.message, 'error');
+          }
+        });
+      }
+    });
+  });
+</script>

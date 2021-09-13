@@ -1,0 +1,32 @@
+{{#if messages.success}}
+{{#each messages.success as |message|}}
+<div class="alert alert-success alert-dismissible fade show mb-5" role="alert">
+    <i class="mdi mdi-check-all mr-2"></i> {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+{{/each}}
+{{/if}}
+
+{{#if messages.error}}
+{{#each messages.error as |message|}}
+<div class="alert alert-danger alert-dismissible fade show mb-5" role="alert">
+    <i class="mdi mdi-block-helper mr-2"></i> {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+{{/each}}
+{{/if}}
+
+{{#if messages.info}}
+{{#each messages.info as |message|}}
+<div class="alert alert-info alert-dismissible fade show mb-5" role="alert">
+    <i class="mdi mdi-alert-circle-outline mr-2"></i> {{message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+{{/each}}
+{{/if}}

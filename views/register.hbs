@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>House - Inscription</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="House Administration" name="description" />
+    <meta content="Licon Corp" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+    <!-- Bootstrap Css -->
+    <link href="/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/toastr.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="/assets/css/app.css" id="app-style" rel="stylesheet" type="text/css" />
+
+  </head>
+
+  <body>
+    <div class="account-pages my-5 pt-sm-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6 col-xl-5">
+            <div class="card overflow-hidden">
+              <div class="bg-login text-center">
+                <div class="bg-login-overlay"></div>
+                <div class="position-relative">
+                  <h5 class="text-white font-size-20">Bienvenue parmi nous!</h5>
+                  <p class="text-white-50 mb-0">Inscrivez vous pour continuer sur House.</p>
+                  <a href="/" class="logo logo-admin mt-4">
+                    <img src="/assets/images/logo-sm-dark.png" alt="" height="30">
+                  </a>
+                </div>
+              </div>
+              <div class="card-body pt-5">
+                <div class="p-2">
+                  <form action="/api/auth/register" method="POST" class="form-horizontal">
+
+                    <div class="form-group">
+                      <label for="phone">Votre nom</label>
+                      <input type="text" class="form-control" id="name" name="name" placeholder="Jon Snow" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="phone">Adresse email</label>
+                      <input type="email" class="form-control" id="email" name="email"
+                        placeholder="jonsnow@winterfell.com" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="phone">Numéro de téléphone</label>
+                      <input type="tel" class="form-control" id="phone" name="phone" placeholder="699999999" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="password">Mot de passe</label>
+                      <input type="password" class="form-control" name="password" id="password"
+                        placeholder="Entrez votre mot de passe">
+                    </div>
+
+                    <input type="hidden" name="role" value="agent">
+
+                    <div class="mt-3">
+                      <button class="btn btn-primary btn-block waves-effect waves-light" id="register-btn"
+                        type="submit">Inscription</button>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                      <a href="/login" class="text-muted"><i class="mdi mdi-lock mr-1"></i> Déjà inscrit? Connectez
+                        vous</a>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+            <div class="mt-5 text-center">
+              <p>Copyright © 2020 House.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="/assets/libs/jquery/jquery.min.js"></script>
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/assets/libs/node-waves/waves.min.js"></script>
+    <script src="/assets/libs/inputmask/min/jquery.inputmask.bundle.min.js"></script>
+    <script src="/assets/libs/toastr.min.js"></script>
+    <script src="/assets/js/pages/form-mask.init.js"></script>
+
+    <script src="/assets/js/app.js"></script>
+    <script>
+      $('.form-horizontal').submit(function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const name = $('#name').val();
+        const phone = $('#phone').val();
+        toastr.options.progressBar = true;
+        toastr.options.positionClass = "toast-bottom-full-width";
+
+        $.ajax({
+          url: '/api/auth/register',
+          method: 'POST',
+          data: { name: name, phone: phone, email: email, password: password, role: 'agent' },
+          success: (response) => {
+            window.location.replace('/');
+          },
+          error: (err) => {
+            toastr.error(err.responseJSON.message, "Error");
+          }
+        });
+      });
+    </script>
+
+  </body>
+
+</html>
