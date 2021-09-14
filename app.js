@@ -23,11 +23,17 @@ const app = express()
 app.use(cookieParser(process.env.SESSION_SECRET))
 app.use(session({
   key: 'user_sid',
-  secret: process.env.SESSION_SECRET,
+  secret: 'secret',
   resave: false,
   saveUninitialized: false,
   cookie: { expires: new Date(Date.now() + (3600000 * 2)) }
 }))
+
+/*  replacemennt
+const app = express();
+app.use(session({ secret: 'somevalue' }));
+*/
+
 app.use(flash())
 
 app.use((req, res, next) => {
@@ -55,7 +61,7 @@ app.engine('hbs', handlebars({
         return opts.inverse(this)
     }
   }
-}))
+})) 
 
 
 // Check if user cookie exists while there's no user in session
