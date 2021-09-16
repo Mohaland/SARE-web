@@ -23,7 +23,7 @@ const app = express()
 app.use(cookieParser(process.env.SESSION_SECRET))
 app.use(session({
   key: 'user_sid',
-  secret: 'secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: { expires: new Date(Date.now() + (3600000 * 2)) }
