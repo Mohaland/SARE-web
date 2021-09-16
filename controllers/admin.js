@@ -15,7 +15,7 @@ exports.login = (req, res) => {
   if (!token)
     return res.status(401).json({ message: "jeton Fourni invalide." });
 
-  request.get(`http://housecm.herokuapp.com/api/auth/check/${token}`, (error, response, body) => 
+  request.get(`https://housecm.herokuapp.com/api/auth/check/${token}`, (error, response, body) => 
 
    /*    request.get(`https://housecm.herokuapp.com/api/auth/check/${token}`, (error, response, body) => */ {
     if (error) {
